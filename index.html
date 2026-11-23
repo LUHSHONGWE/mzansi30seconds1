@@ -1,1 +1,920 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mzansi 30 Seconds</title>
+
+    
+<style>
+/* ==============================
+   MZANSI 30 SECONDS - GAME SHOW
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    text-align: center;
+    padding: 25px;
+
+    background:
+        radial-gradient(circle at 15% 10%, rgba(0, 120, 255, 0.3), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(255, 0, 50, 0.25), transparent 30%),
+        radial-gradient(circle at 50% 90%, rgba(255, 180, 0, 0.15), transparent 40%),
+        linear-gradient(135deg, #050816, #10152c, #090b18);
+
+    min-height: 100vh;
+}
+
+/* Background glow effects */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+
+    background:
+        repeating-linear-gradient(
+            120deg,
+            transparent 0px,
+            transparent 80px,
+            rgba(255,255,255,0.015) 81px,
+            transparent 83px
+        );
+}
+
+/* TITLE */
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #ffd700,
+        #ffffff,
+        #ffb700,
+        #ffffff
+    );
+
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.4));
+}
+
+/* SCOREBOARD */
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.team-score {
+    width: 300px;
+    padding: 20px;
+    border-radius: 18px;
+    font-size: 1.3em;
+    font-weight: bold;
+
+    background: rgba(15, 20, 40, 0.85);
+    backdrop-filter: blur(10px);
+
+    transition: 0.3s;
+}
+
+.team-score.blue {
+    border: 2px solid #00aaff;
+
+    box-shadow:
+        0 0 12px rgba(0, 170, 255, 0.5),
+        inset 0 0 15px rgba(0, 100, 255, 0.15);
+}
+
+.team-score.red {
+    border: 2px solid #ff3030;
+
+    box-shadow:
+        0 0 12px rgba(255, 40, 40, 0.5),
+        inset 0 0 15px rgba(255, 0, 0, 0.15);
+}
+
+.team-score div {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #d5d9e8;
+}
+
+.team-score.blue:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px #008cff;
+}
+
+.team-score.red:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px #ff3030;
+}
+
+/* GAME BOARD */
+
+#board {
+    margin: 30px auto;
+    max-width: 750px;
+    padding: 25px;
+
+    background: rgba(9, 14, 30, 0.85);
+    border: 2px solid #ffc400;
+    border-radius: 20px;
+
+    box-shadow:
+        0 0 15px rgba(255, 196, 0, 0.25),
+        inset 0 0 25px rgba(0, 0, 0, 0.5);
+}
+
+#board h3 {
+    font-size: 1.7em;
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* BOARD GRID */
+
+.spaces {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.space {
+    padding: 20px 10px;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 1.3em;
+    color: white;
+
+    transition: all 0.25s ease;
+
+    background: rgba(255,255,255,0.05);
+}
+
+/* BLUE SPACES */
+
+.space.blue {
+    background: linear-gradient(145deg, #087bff, #003b9c);
+
+    border: 2px solid #36baff;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.5),
+        inset 0 0 10px rgba(255,255,255,0.1);
+}
+
+/* RED SPACES */
+
+.space.red {
+    background: linear-gradient(145deg, #ff3030, #990000);
+
+    border: 2px solid #ff7474;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.5),
+        inset 0 0 10px rgba(255,255,255,0.1);
+}
+
+/* SPACE HOVER */
+
+.space:hover {
+    transform: scale(1.05);
+    filter: brightness(1.3);
+}
+
+/* WORD CARD */
+
+#wordBox {
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #fff1c2
+    );
+
+    color: #171717;
+
+    border: 3px solid #ffc400;
+    padding: 25px;
+    margin: 25px auto;
+
+    max-width: 550px;
+    border-radius: 18px;
+
+    font-size: 1.2em;
+    font-weight: 600;
+
+    box-shadow:
+        0 0 15px rgba(255, 196, 0, 0.5),
+        0 0 30px rgba(255, 196, 0, 0.15);
+}
+
+#wordBox h3 {
+    color: #111827;
+    margin-bottom: 12px;
+    font-size: 1.5em;
+}
+
+#wordBox ul {
+    list-style-position: inside;
+    margin-top: 10px;
+}
+
+#wordBox li {
+    margin: 8px 0;
+}
+
+/* TIMER */
+
+#timer {
+    display: inline-block;
+
+    font-size: 4em;
+    font-weight: 900;
+
+    color: #ff3030;
+
+    background: #090909;
+
+    border: 3px solid #ff3030;
+    border-radius: 18px;
+
+    padding: 10px 40px;
+    margin: 10px auto 25px;
+
+    min-width: 180px;
+
+    text-shadow:
+        0 0 10px red,
+        0 0 25px red;
+
+    box-shadow:
+        0 0 15px rgba(255,0,0,0.5),
+        inset 0 0 20px rgba(255,0,0,0.1);
+}
+
+/* BUTTONS */
+
+.controls {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+button {
+    padding: 16px 25px;
+    margin: 5px;
+
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    background: linear-gradient(
+        145deg,
+        #252b45,
+        #111629
+    );
+
+    box-shadow: 0 5px 12px rgba(0,0,0,0.4);
+}
+
+/* START BUTTON */
+
+button:nth-child(1) {
+    background: linear-gradient(145deg, #00c853, #007b32);
+    border-color: #55ff99;
+}
+
+/* SCORE BUTTON */
+
+button:nth-child(2) {
+    background: linear-gradient(145deg, #00a8ff, #0055cc);
+    border-color: #66ccff;
+}
+
+/* NEXT TURN BUTTON */
+
+button:nth-child(3) {
+    background: linear-gradient(145deg, #ff9800, #cc5500);
+    border-color: #ffd080;
+}
+
+/* RESET BUTTON */
+
+button:nth-child(4) {
+    background: linear-gradient(145deg, #a020f0, #6200a8);
+    border-color: #d580ff;
+}
+
+/* BUTTON HOVER */
+
+button:hover {
+    transform: translateY(-4px) scale(1.04);
+    filter: brightness(1.2);
+
+    box-shadow:
+        0 8px 20px rgba(255,255,255,0.15);
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+/* RESPONSIVE MOBILE */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 2em;
+        letter-spacing: 1px;
+    }
+
+    .scoreboard {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .team-score {
+        width: 95%;
+    }
+
+    #board {
+        padding: 12px;
+    }
+
+    .spaces {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+    }
+
+    .space {
+        padding: 15px 5px;
+        font-size: 1em;
+    }
+
+    #wordBox {
+        padding: 18px;
+        font-size: 1em;
+    }
+
+    #timer {
+        font-size: 3em;
+        min-width: 140px;
+    }
+
+    button {
+        padding: 13px 15px;
+        font-size: 0.9em;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <h1>Mzansi 30 Seconds 🎲</h1>
+
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+
+        <div class="team-score blue">
+            🔵 Blue Team:
+            <span id="blueScore">0</span>
+
+            <div>
+                Position:
+                <span id="bluePos">0</span>
+            </div>
+        </div>
+
+        <div class="team-score red">
+            🔴 Red Team:
+            <span id="redScore">0</span>
+
+            <div>
+                Position:
+                <span id="redPos">0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Game Board -->
+    <div id="board">
+
+        <h3>Game Board</h3>
+
+        <div class="spaces">
+
+            <div id="space0" class="space blue">0</div>
+            <div id="space1" class="space red">1</div>
+            <div id="space2" class="space blue">2</div>
+            <div id="space3" class="space blue">3</div>
+            <div id="space4" class="space red">4</div>
+            <div id="space5" class="space blue">5</div>
+            <div id="space6" class="space red">6</div>
+            <div id="space7" class="space blue">7</div>
+            <div id="space8" class="space red">8</div>
+            <div id="space9" class="space blue">9</div>
+            <div id="space10" class="space red">10</div>
+            <div id="space11" class="space blue">11</div>
+            <div id="space12" class="space blue">12</div>
+            <div id="space13" class="space red">13</div>
+            <div id="space14" class="space blue">14</div>
+            <div id="space15" class="space red">15</div>
+            <div id="space16" class="space blue">16</div>
+            <div id="space17" class="space red">17</div>
+            <div id="space18" class="space blue">18</div>
+            <div id="space19" class="space red">19</div>
+
+        </div>
+    </div>
+
+    <!-- Word Card -->
+    <div id="wordBox">
+        Press Start to draw a card
+    </div>
+
+    <!-- Timer -->
+    <div id="timer">30</div>
+
+    <!-- Controls -->
+    <div class="controls">
+
+        <button onclick="startRound()">
+            🎬 Start Round
+        </button>
+
+        <button onclick="scorePoint()">
+            ✅ Score Point
+        </button>
+
+        <button onclick="nextTurn()">
+            ➡️ Next Turn
+        </button>
+
+        <button onclick="resetGame()">
+            🔄 Reset Game
+        </button>
+
+    </div>
+
+    <script>
+        // =====================================================
+        // GAME DATA
+        // =====================================================
+
+        const blueCards = [
+            {
+                category: "Food",
+                words: [
+                    "Debonairs",
+                    "Chicken Licken",
+                    "Romas Pizza",
+                    "Kota",
+                    "Steers"
+                ]
+            },
+            {
+                category: "Celebrities",
+                words: [
+                    "Trevor Noah",
+                    "Sho Madjozi",
+                    "Pearl Thusi",
+                    "Cassper Nyovest",
+                    "Bonang Matheba"
+                ]
+            },
+            {
+                category: "Places",
+                words: [
+                    "Soweto",
+                    "Table Mountain",
+                    "Durban Beach",
+                    "Gold Reef City",
+                    "UJ"
+                ]
+            },
+            {
+                category: "Slang",
+                words: [
+                    "Eish",
+                    "Chommie",
+                    "Jol",
+                    "Skrr Skrr",
+                    "Tjo!"
+                ]
+            },
+            {
+                category: "Brands",
+                words: [
+                    "MTN",
+                    "Pick n Pay",
+                    "Nando's",
+                    "Vodacom",
+                    "Shoprite"
+                ]
+            }
+        ];
+
+        const redCards = [
+            {
+                category: "Politics",
+                words: [
+                    "Cyril Ramaphosa",
+                    "EFF",
+                    "ANC",
+                    "Nkandla",
+                    "Load Shedding"
+                ]
+            },
+            {
+                category: "History",
+                words: [
+                    "Apartheid",
+                    "Nelson Mandela",
+                    "Steve Biko",
+                    "Freedom Charter",
+                    "Sharpeville"
+                ]
+            },
+            {
+                category: "Music",
+                words: [
+                    "Amapiano",
+                    "Black Coffee",
+                    "Mafikizolo",
+                    "DJ Maphorisa",
+                    "Zahara"
+                ]
+            },
+            {
+                category: "Sports",
+                words: [
+                    "Bafana Bafana",
+                    "Springboks",
+                    "Kaizer Chiefs",
+                    "Orlando Pirates",
+                    "Rugby World Cup"
+                ]
+            },
+            {
+                category: "TV & Film",
+                words: [
+                    "Generations",
+                    "Uzalo",
+                    "Yizo Yizo",
+                    "Shaka iLembe",
+                    "Blood & Water"
+                ]
+            }
+        ];
+
+        // =====================================================
+        // GAME VARIABLES
+        // =====================================================
+
+        let currentTeam = "Blue";
+        let blueScore = 0;
+        let redScore = 0;
+
+        let timer;
+        let timeLeft = 30;
+
+        let currentCard = null;
+        let roundActive = false;
+        let gameOver = false;
+
+        const boardSpaces = [
+            "blue", "red", "blue", "blue", "red",
+            "blue", "red", "blue", "red", "blue",
+            "red", "blue", "blue", "red", "blue",
+            "red", "blue", "red", "blue", "red"
+        ];
+
+        let teamPositions = {
+            Blue: 0,
+            Red: 0
+        };
+
+        // =====================================================
+        // DRAW CARD
+        // =====================================================
+
+        function drawCard(color) {
+
+            const deck = color === "blue"
+                ? blueCards
+                : redCards;
+
+            const randomCard =
+                deck[Math.floor(Math.random() * deck.length)];
+
+            currentCard = randomCard;
+
+            displayCard(randomCard);
+        }
+
+        // =====================================================
+        // DISPLAY CARD
+        // =====================================================
+
+        function displayCard(card) {
+
+            const wordBox =
+                document.getElementById("wordBox");
+
+            wordBox.innerHTML = `
+                <h3>${card.category} (${currentTeam} Team)</h3>
+
+                <ul>
+                    ${card.words.map(word =>
+                        `<li>${word}</li>`
+                    ).join("")}
+                </ul>
+            `;
+        }
+
+        // =====================================================
+        // START ROUND
+        // =====================================================
+
+        function startRound() {
+
+            if (gameOver) return;
+
+            if (roundActive) {
+                alert("This round is already running!");
+                return;
+            }
+
+            const position = teamPositions[currentTeam];
+
+            if (position >= boardSpaces.length) {
+                checkWin();
+                return;
+            }
+
+            const spaceColor = boardSpaces[position];
+
+            drawCard(spaceColor);
+
+            timeLeft = 30;
+
+            document.getElementById("timer").textContent =
+                timeLeft;
+
+            roundActive = true;
+
+            clearInterval(timer);
+
+            timer = setInterval(() => {
+
+                timeLeft--;
+
+                document.getElementById("timer").textContent =
+                    timeLeft;
+
+                if (timeLeft <= 0) {
+
+                    clearInterval(timer);
+
+                    roundActive = false;
+
+                    document.getElementById("wordBox").innerHTML +=
+                        "<p>⏱️ Time's up!</p>";
+                }
+
+            }, 1000);
+        }
+
+        // =====================================================
+        // SCORE POINT
+        // =====================================================
+
+        function scorePoint() {
+
+            if (gameOver) return;
+
+            if (!currentCard) {
+                alert("Start a round first!");
+                return;
+            }
+
+            if (!roundActive) {
+                alert("The round has ended. Start a new round or change turns.");
+                return;
+            }
+
+            clearInterval(timer);
+            roundActive = false;
+
+            if (currentTeam === "Blue") {
+
+                blueScore++;
+
+                teamPositions.Blue++;
+
+                document.getElementById("blueScore").textContent =
+                    blueScore;
+
+                document.getElementById("bluePos").textContent =
+                    teamPositions.Blue;
+
+            } else {
+
+                redScore++;
+
+                teamPositions.Red++;
+
+                document.getElementById("redScore").textContent =
+                    redScore;
+
+                document.getElementById("redPos").textContent =
+                    teamPositions.Red;
+            }
+
+            highlightSpace(currentTeam);
+
+            checkWin();
+        }
+
+        // =====================================================
+        // HIGHLIGHT BOARD SPACE
+        // =====================================================
+
+        function highlightSpace(team) {
+
+            clearHighlights();
+
+            const pos = teamPositions[team];
+
+            const spaceId = `space${pos}`;
+
+            const space =
+                document.getElementById(spaceId);
+
+            if (space) {
+
+                space.style.border = "3px solid gold";
+
+                space.style.transform = "scale(1.1)";
+            }
+        }
+
+        // =====================================================
+        // CLEAR BOARD HIGHLIGHTS
+        // =====================================================
+
+        function clearHighlights() {
+
+            for (let i = 0; i < boardSpaces.length; i++) {
+
+                const space =
+                    document.getElementById(`space${i}`);
+
+                if (space) {
+
+                    space.style.border = "none";
+
+                    space.style.transform = "scale(1)";
+                }
+            }
+        }
+
+        // =====================================================
+        // CHECK WINNER
+        // =====================================================
+
+        function checkWin() {
+
+            if (teamPositions.Blue >= boardSpaces.length) {
+
+                gameOver = true;
+
+                clearInterval(timer);
+
+                document.getElementById("wordBox").innerHTML =
+                    "🏆 BLUE TEAM WINS! Congratulations!";
+
+                return;
+            }
+
+            if (teamPositions.Red >= boardSpaces.length) {
+
+                gameOver = true;
+
+                clearInterval(timer);
+
+                document.getElementById("wordBox").innerHTML =
+                    "🏆 RED TEAM WINS! Congratulations!";
+
+                return;
+            }
+        }
+
+        // =====================================================
+        // NEXT TURN
+        // =====================================================
+
+        function nextTurn() {
+
+            if (gameOver) return;
+
+            clearInterval(timer);
+
+            roundActive = false;
+
+            currentCard = null;
+
+            timeLeft = 30;
+
+            document.getElementById("timer").textContent = "30";
+
+            currentTeam =
+                currentTeam === "Blue" ? "Red" : "Blue";
+
+            document.getElementById("wordBox").textContent =
+                `${currentTeam} Team's Turn`;
+
+        }
+
+        // =====================================================
+        // RESET GAME
+        // =====================================================
+
+        function resetGame() {
+
+            blueScore = 0;
+            redScore = 0;
+
+            teamPositions.Blue = 0;
+            teamPositions.Red = 0;
+
+            currentTeam = "Blue";
+
+            currentCard = null;
+
+            timeLeft = 30;
+
+            roundActive = false;
+            gameOver = false;
+
+            clearInterval(timer);
+
+            document.getElementById("blueScore").textContent = "0";
+            document.getElementById("redScore").textContent = "0";
+
+            document.getElementById("bluePos").textContent = "0";
+            document.getElementById("redPos").textContent = "0";
+
+            document.getElementById("wordBox").textContent =
+                "Press Start to draw a card";
+
+            document.getElementById("timer").textContent = "30";
+
+            clearHighlights();
+        }
+
+    </script>
+
+</body>
+</html>
+
