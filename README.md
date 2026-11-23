@@ -1,5 +1,7 @@
 # Mzansi 30 Seconds 🎲
 
+https://luhshongwe.github.io/mzansi30seconds1/
+
 ## Project Overview
 
 Mzansi 30 Seconds is a browser-based team word-guessing game inspired by the popular 30 Seconds board game. The game is designed for two teams, Blue and Red, competing against each other to move across a 20-space game board by correctly guessing words within a 30-second round.
